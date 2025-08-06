@@ -10,7 +10,12 @@ export default {
     execute: (directory) => {
       const fileSystemStore = useFileSystemStore()
       if (directory === '..') {
+        if (fileSystemStore.getCurrentDirectory().length === 1) {
+          return
+        }
         fileSystemStore.getCurrentDirectory().pop()
+      } else if (directory === '/' || !directory) {
+        fileSystemStore.setCurrentDirectory(['root'])
       } else {
         directory = directory.split('/')
         let tempPath = fileSystemStore.getCurrentDirectory().concat(directory)
@@ -42,10 +47,18 @@ export default {
   },
   rm: {
     description: 'Удаление директории',
-    hidden: true,
     execute: (directoryName) => {
+      console.log(directoryName);
+      
       const fileSystemStore = useFileSystemStore()
       if (directoryName) {
+        if (!fileSystemStore.checkDirectoryExists(fileSystemStore.getCurrentDirectory().concat(directoryName.split('/')))) {
+          terminalConsole.error(`Директория ${directoryName} не существует`)
+          return {
+            type: 'error',
+            text: `Директория ${directoryName} не существует`
+          }
+        }
         fileSystemStore.removeDirectory(fileSystemStore.getCurrentDirectory(), directoryName)
       } else {
         terminalConsole.error('Название директории не указано')

@@ -38,6 +38,17 @@ export const useFileSystemStore = defineStore('fileSystem', () => {
     return currentDirectory.children
   }
 
+  const getParentDirectory = (directory) => {
+    let currentDirectory = directoriesTree
+    for (let i = 1; i < directory.length; i++) {
+      currentDirectory = currentDirectory.children.find(child => child.name === directory[i])
+      if (!currentDirectory) {
+        return
+      }
+    }
+    return currentDirectory
+  }
+
   const directoriesTree = reactive({
     name: 'root',
     type: 'directory',
@@ -70,8 +81,8 @@ export const useFileSystemStore = defineStore('fileSystem', () => {
   }
 
   const removeDirectory = (parentDirectory, directoryName) => {
-    const directoryChildren = getChildren(parentDirectory)
-    parentDirectory.children = parentDirectory.children.filter(directory => directory.name !== directoryName)
+    let parent = getParentDirectory(parentDirectory)
+    parent.children = parent.children.filter(child => child.name !== directoryName)
   }
 
   const printDirectoriesTree = () => {

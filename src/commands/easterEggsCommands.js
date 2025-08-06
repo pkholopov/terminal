@@ -1,3 +1,6 @@
+import { sleep } from "@/utils/sleep"
+import { useTerminalStore } from "@/stores/terminal"
+
 export default {
   descriptionEasterEggsCommands: {
     description: 'Команды для взлома',
@@ -13,12 +16,12 @@ export default {
       }
     }
   },
-  tilt: {
+  flip: {
     hidden: true,
-    execute: (deg) => {
-      deg = deg || 1
+    execute: () => {
       const appContainer = document.getElementById('app')
-      appContainer.style.transform = `rotate(${deg}deg)`
+      // appContainer.style.transform = `rotate(180deg)`
+      appContainer.classList.toggle('flip')
     }
   },
   shake: {
@@ -29,6 +32,15 @@ export default {
       setTimeout(() => {
         appContainer.classList.remove('shake')
       }, 2000)
+    }
+  },
+  sleep: {
+    hidden: true,
+    execute: async () => {
+      const terminalStore = useTerminalStore()
+      terminalStore.isExecuting = true
+      await sleep(2000)
+      terminalStore.isExecuting = false
     }
   }
 }

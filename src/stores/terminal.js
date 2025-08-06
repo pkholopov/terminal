@@ -8,6 +8,7 @@ export const useTerminalStore = defineStore('terminal', () => {
   ])
 
   const commandHistory = ref([])
+  const isExecuting = ref(false)
 
   const addToOutput = (outputItem) => {
     output.value.push(outputItem)

@@ -12,20 +12,42 @@ const fileSystemStore = useFileSystemStore()
 const terminalStore = useTerminalStore()
 
 const command = ref('')
-const input = ref(null)
+const waitingIndicator = ref('|')
+const inputRef = ref(null)
 const commandHistory = storeToRefs(terminalStore).commandHistory
 const historyIndex = ref(0)
 const currentDirectory = computed(() => {
   return fileSystemStore.pathToString(fileSystemStore.getCurrentDirectory())
 })
 
-
-onMounted(() => {
-  input.value.focus()
+const isExecuting = computed(() => {
+  return terminalStore.isExecuting
 })
 
+const vFocus = {
+  mounted: (el) => {
+    el.focus()
+  }
+}
+
+onMounted(() => {
+  inputRef.value.focus()
+  waitingIndicatorAnimation()
+})
+
+const waitingIndicatorAnimation = () => {
+  const symbols = ['|', '/', '-', '\\']
+  const nextSymbol = () => {
+    waitingIndicator.value = symbols[(symbols.indexOf(waitingIndicator.value) + 1) % symbols.length]
+  }
+  setInterval(() => {
+    nextSymbol()
+  }, 200)
+}
+
 const returnFocus = () => {
-  input.value.focus()
+  if (!inputRef.value) return
+  inputRef.value.focus()
 }
 
 const executeCommand = () => {
@@ -58,15 +80,18 @@ const navigateHistory = (direction) => {
     <span class="prompt">
       <span :style="`color: ${userStore.userConfig.color}`">{{ userStore.userName }}</span>:<span class="directory">{{ currentDirectory }}</span>$</span>
     <input 
+      v-if="!isExecuting"
       v-model="command" 
+      v-focus
       @keyup.enter="executeCommand" 
       @keyup.up="navigateHistory(-1)"
       @keyup.down="navigateHistory(1)"
       @blur="returnFocus"
-      ref="input"
+      ref="inputRef"
       type="text" 
       class="input" 
     />
+    <input v-else disabled type="text" class="input" v-model="waitingIndicator" />
   </div>
 </template>
 

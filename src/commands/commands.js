@@ -39,7 +39,7 @@ export const commands = {
           return {
             html: true,
             type: 'output',
-            text: '<a href="tel:+79250000000">+7 (925) 000-00-00</a>'
+            text: '<a href="tel:+70000000000">+7 (000) 000-00-00</a>'
           }
         }
       }
